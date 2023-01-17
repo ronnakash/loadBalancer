@@ -3,37 +3,10 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"net/http/httputil"
-	"net/url"
-	"os"
 )
 
 
 
-type simpleServer struct {
-	addr  string
-	proxy *httputil.ReverseProxy
-}
-
-func (s *simpleServer) Address() string { return s.addr }
-
-func (s *simpleServer) IsAlive() bool { return true }
-
-func (s *simpleServer) Serve(rw http.ResponseWriter, req *http.Request) {
-	s.proxy.ServeHTTP(rw, req)
-}
-
-func newSimpleServer(addr string) *simpleServer {
-	serverUrl, err := url.Parse(addr)
-	if(err != nil) {
-		fmt.Printf("error: %v\n", err)
-		os.Exit(1)
-	}
-	return &simpleServer{
-		addr:  addr,
-		proxy: httputil.NewSingleHostReverseProxy(serverUrl),
-	}
-}
 
 type LoadBalancer struct {
 	port            string
@@ -75,9 +48,9 @@ func (lb *LoadBalancer) serveProxy(rw http.ResponseWriter, req *http.Request) {
 
 func main() {
 	servers := []Server{
-		newSimpleServer("localhost:8081"),
-		newSimpleServer("localhost:8082"),
-		newSimpleServer("localhost:8083"),
+		newSimpleServer("localhost", "8081"),
+		newSimpleServer("localhost", "8082"),
+		newSimpleServer("localhost", "8083"),
 	}
 
 	lb := NewLoadBalancer("8000", servers)
