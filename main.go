@@ -6,8 +6,6 @@ import (
 )
 
 
-
-
 type LoadBalancer struct {
 	port            string
 	roundRobinCount int
@@ -47,13 +45,15 @@ func (lb *LoadBalancer) serveProxy(rw http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-	servers := []Server{
-		newSimpleServer("localhost", "8081"),
-		newSimpleServer("localhost", "8082"),
-		newSimpleServer("localhost", "8083"),
-	}
-
-	lb := NewLoadBalancer("8000", servers)
+	// servers := []Server{
+	// 	newSimpleServer("localhost", "8081"),
+	// 	newSimpleServer("localhost", "8082"),
+	// 	newSimpleServer("localhost", "8083"),
+	// }
+	
+	servers := parse()
+	fmt.Printf("number of servers:%s'\n", len(servers))
+	lb := NewLoadBalancer("8080", servers)
 	handleRedirect := func(rw http.ResponseWriter, req *http.Request) {
 		lb.serveProxy(rw, req)
 	}

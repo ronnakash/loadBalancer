@@ -29,29 +29,47 @@ type Server interface {
 //     fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
 // }
 
-type simpleServer struct {
-	addr string
-	port string
-	proxy *httputil.ReverseProxy
+type SimpleServer struct {
+	addr 	string
+	port 	string
+	proxy 	*httputil.ReverseProxy
 }
 
-func (s *simpleServer) Address() string { return s.addr }
+type ServerParams struct {
+	Address string
+	Port string
+}
 
-func (s *simpleServer) IsAlive() bool { return true }
+func (s *SimpleServer) Address() string { return s.addr }
 
-func (s *simpleServer) Serve(rw http.ResponseWriter, req *http.Request) {
+func (s *SimpleServer) IsAlive() bool { return true }
+
+func (s *SimpleServer) Serve(rw http.ResponseWriter, req *http.Request) {
     fmt.Fprintf(rw, "Hello from %s%s\n", s.addr , s.port);
 }
 
-func newSimpleServer(addr string, port string) *simpleServer {
-	serverUrl, err := url.Parse(addr+":"+addr)
+func newSimpleServer(addr string, port string) *SimpleServer {
+	serverUrl, err := url.Parse("http://" + addr + ":" + port)
 	if(err != nil) {
 		fmt.Printf("error: %v\n", err)
 		os.Exit(1)
 	}
-	return &simpleServer{
+	return &SimpleServer{
 		addr:  addr,
 		port: port,
+		proxy: httputil.NewSingleHostReverseProxy(serverUrl),
+	}
+}
+
+func initProxy(params ServerParams) *SimpleServer {
+	serverUrl, err := url.Parse("http://" + params.Address +":"+params.Port)
+	if(err != nil) {
+		fmt.Printf("error: %v\n", err)
+		os.Exit(1)
+	}
+	return &SimpleServer{
+		addr:  params.Address,
+		port: params.Port,
 		proxy: httputil.NewSingleHostReverseProxy(serverUrl),
 	}
 }
