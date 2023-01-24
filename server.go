@@ -45,7 +45,8 @@ func (s *SimpleServer) Address() string { return s.addr + ":" + s.port }
 func (s *SimpleServer) IsAlive() bool { return true }
 
 func (s *SimpleServer) Serve(rw http.ResponseWriter, req *http.Request) {
-    fmt.Fprintf(rw, "Hello from %s:%s\n", s.addr , s.port);
+    // fmt.Fprintf(rw, "Hello from %s:%s\n", s.addr , s.port);
+	s.proxy.ServeHTTP(rw, req)
 }
 
 func newSimpleServer(addr string, port string) *SimpleServer {
