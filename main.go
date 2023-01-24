@@ -38,21 +38,16 @@ func (lb *LoadBalancer) serveProxy(rw http.ResponseWriter, req *http.Request) {
 	targetServer := lb.getNextAvailableServer()
 
 	// could optionally log stuff about the request here!
-	fmt.Printf("forwarding request to address %q\n", targetServer.Address())
+	fmt.Printf("forwarding request to address %s\n", targetServer.Address())
 
 	// could delete pre-existing X-Forwarded-For header to prevent IP spoofing
 	targetServer.Serve(rw, req)
 }
 
 func main() {
-	// servers := []Server{
-	// 	newSimpleServer("localhost", "8081"),
-	// 	newSimpleServer("localhost", "8082"),
-	// 	newSimpleServer("localhost", "8083"),
-	// }
 	
 	servers := parse()
-	fmt.Printf("number of servers:%s'\n", len(servers))
+	fmt.Printf("number of servers:%d'\n", len(servers))
 	lb := NewLoadBalancer("8080", servers)
 	handleRedirect := func(rw http.ResponseWriter, req *http.Request) {
 		lb.serveProxy(rw, req)
