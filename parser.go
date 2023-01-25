@@ -4,27 +4,17 @@ import (
     "fmt"
     "gopkg.in/yaml.v3"
     "io/ioutil"
-    // "net/http"
 )
 
-// type Server struct {
-//     Address string
-//     Port    string
-//     Proxy   *httputil.ReverseProxy
-// }
-
-// type ServerParams struct {
-// 	addr string
-// 	port string
-// }
 
 type Config struct {
     Algorithm 	string
     Servers 	[]ServerParams
+    Port        string
 }
 
 
-func parse() []Server {
+func parse() Config {
     var serverParams []ServerParams
 	var servers []Server
 	var config Config
@@ -50,7 +40,7 @@ func parse() []Server {
     // Initialize each server
     for i := range serverParams {
 		fmt.Printf("server %d: %s:%s\n", i, serverParams[i].Address, serverParams[i].Port )
-        servers = append(servers, initProxy(serverParams[i]))
+        servers = append(servers, newSimpleServer(serverParams[i]))
     }
 
 	return servers

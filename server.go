@@ -49,7 +49,7 @@ func (s *SimpleServer) Serve(rw http.ResponseWriter, req *http.Request) {
 	s.proxy.ServeHTTP(rw, req)
 }
 
-func newSimpleServer(addr string, port string) *SimpleServer {
+func NewSimpleServer(addr string, port string) *SimpleServer {
 	serverUrl, err := url.Parse("http://" + addr + ":" + port)
 	if(err != nil) {
 		fmt.Printf("error: %v\n", err)
@@ -62,7 +62,7 @@ func newSimpleServer(addr string, port string) *SimpleServer {
 	}
 }
 
-func initProxy(params ServerParams) *SimpleServer {
+func newSimpleServer(params ServerParams) *SimpleServer {
 	serverUrl, err := url.Parse("http://" + params.Address +":"+params.Port)
 	if(err != nil) {
 		fmt.Printf("error: %v\n", err)
