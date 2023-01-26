@@ -3,23 +3,29 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"sync"
 )
 
 type LoadBalancer struct {
 	port            string
 	roundRobinCount int
 	servers         []Server
-	mu      		sync.Mutex
-	conns  		 	[]int	
 	algorithm		string
 }
 
 func NewLoadBalancer(config Config) *LoadBalancer {
+	var serverParams []ServerParams = config.Servers
+	var servers []Server
+
+	// Initialize each server
+    for i := range serverParams {
+		fmt.Printf("server %d: %s:%s\n", i, serverParams[i].Address, serverParams[i].Port )
+        servers = append(servers, newSimpleServer(serverParams[i]))
+    }
+
 	return &LoadBalancer{
 		port:            	config.Port,
 		roundRobinCount:	0,
-		servers:        	config.Servers,
+		servers:        	servers,
 		algorithm: 			config.Algorithm,
 
 	}
@@ -49,10 +55,11 @@ func (lb *LoadBalancer) getNextAvailableServerRoundRobin() Server {
 func (lb *LoadBalancer) getLeastConnectedServer() (Server) {
     var server Server
     var minConns = -1
-    for i, s := range lb.servers {
-        if minConns == -1 || lb.conns[i] < minConns {
+    for _, s := range lb.servers {
+		conns:= s.GetConnections()
+        if minConns == -1 || conns < minConns {
             server = s
-            minConns = lb.conns[i]
+            minConns = conns
         }
     }
 
@@ -65,7 +72,15 @@ func (lb *LoadBalancer) serveProxy(rw http.ResponseWriter, req *http.Request) {
 
 	// could optionally log stuff about the request here!
 	fmt.Printf("forwarding request to address %s\n", targetServer.Address())
-
+	targetServer.IncrementConnection()
 	// could delete pre-existing X-Forwarded-For header to prevent IP spoofing
 	targetServer.Serve(rw, req)
+	fmt.Printf("done processing request at %s\n", targetServer.Address())
+	targetServer.DecrementConnection()
+}
+
+func (lb *LoadBalancer) helloHandler(hostname string) http.Handler {
+    return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+        lb.serveProxy(rw, req)
+    })
 }

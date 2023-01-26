@@ -6,7 +6,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
-
+	"sync"
 )
 
 // func main() {
@@ -21,6 +21,15 @@ type Server interface {
 	// IsAlive returns true if the server is alive and able to serve requests
 	IsAlive() bool
 
+	//get number of connections to the server
+	GetConnections() int
+
+	//increment number of connections to the server
+	IncrementConnection() 
+
+	//decrement number of connections to the server
+	DecrementConnection() 
+
 	// Serve uses this server to process the request
 	Serve(rw http.ResponseWriter, req *http.Request)
 }
@@ -30,9 +39,11 @@ type Server interface {
 // }
 
 type SimpleServer struct {
-	addr 	string
-	port 	string
-	proxy 	*httputil.ReverseProxy
+	addr 		string
+	port 		string
+	proxy 		*httputil.ReverseProxy
+	mutex 		sync.Mutex
+	connections	int
 }
 
 type ServerParams struct {
@@ -47,6 +58,22 @@ func (s *SimpleServer) IsAlive() bool { return true }
 func (s *SimpleServer) Serve(rw http.ResponseWriter, req *http.Request) {
     // fmt.Fprintf(rw, "Hello from %s:%s\n", s.addr , s.port);
 	s.proxy.ServeHTTP(rw, req)
+}
+
+func (s *SimpleServer) GetConnections() int {
+	return s.connections
+}
+
+func (s *SimpleServer) IncrementConnection() {
+	s.mutex.Lock()
+	s.connections++
+	s.mutex.Unlock()
+}
+
+func (s *SimpleServer) DecrementConnection() {
+	s.mutex.Lock()
+	s.connections--
+	s.mutex.Unlock()
 }
 
 func NewSimpleServer(addr string, port string) *SimpleServer {

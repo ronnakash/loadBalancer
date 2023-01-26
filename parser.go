@@ -15,16 +15,12 @@ type Config struct {
 
 
 func parse() Config {
-    var serverParams []ServerParams
-	var servers []Server
 	var config Config
-
 
     // Read config.yaml file
     yamlFile, err := ioutil.ReadFile("config.yaml")
     if err != nil {
         fmt.Println(err.Error())
-        return nil
     }
 
 
@@ -32,18 +28,10 @@ func parse() Config {
 	err = yaml.Unmarshal(yamlFile, &config)
 	if err != nil {
 		fmt.Println(err.Error())
-		return nil
 	}
 
-	serverParams = config.Servers
 
-    // Initialize each server
-    for i := range serverParams {
-		fmt.Printf("server %d: %s:%s\n", i, serverParams[i].Address, serverParams[i].Port )
-        servers = append(servers, newSimpleServer(serverParams[i]))
-    }
-
-	return servers
+	return config
 
     // http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
     //     var server Server
