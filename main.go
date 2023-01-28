@@ -6,11 +6,9 @@ import (
 )
 
 
-
-
 func main() {
 	
-	config := parse()
+	config := Parse()
 	// fmt.Printf("number of servers:%d'\n", len(servers))
 	lb := NewLoadBalancer(config)
 	handleRedirect := func(rw http.ResponseWriter, req *http.Request) {

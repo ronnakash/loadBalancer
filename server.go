@@ -25,10 +25,10 @@ type Server interface {
 	GetConnections() int
 
 	//increment number of connections to the server
-	IncrementConnection() 
+	IncrementConnections() 
 
 	//decrement number of connections to the server
-	DecrementConnection() 
+	DecrementConnections() 
 
 	// Serve uses this server to process the request
 	Serve(rw http.ResponseWriter, req *http.Request)
@@ -64,13 +64,13 @@ func (s *SimpleServer) GetConnections() int {
 	return s.connections
 }
 
-func (s *SimpleServer) IncrementConnection() {
+func (s *SimpleServer) IncrementConnections() {
 	s.mutex.Lock()
 	s.connections++
 	s.mutex.Unlock()
 }
 
-func (s *SimpleServer) DecrementConnection() {
+func (s *SimpleServer) DecrementConnections() {
 	s.mutex.Lock()
 	s.connections--
 	s.mutex.Unlock()

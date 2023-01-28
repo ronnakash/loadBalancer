@@ -72,15 +72,9 @@ func (lb *LoadBalancer) serveProxy(rw http.ResponseWriter, req *http.Request) {
 
 	// could optionally log stuff about the request here!
 	fmt.Printf("forwarding request to address %s\n", targetServer.Address())
-	targetServer.IncrementConnection()
+	targetServer.IncrementConnections()
 	// could delete pre-existing X-Forwarded-For header to prevent IP spoofing
 	targetServer.Serve(rw, req)
-	fmt.Printf("done processing request at %s\n", targetServer.Address())
-	targetServer.DecrementConnection()
-}
-
-func (lb *LoadBalancer) helloHandler(hostname string) http.Handler {
-    return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-        lb.serveProxy(rw, req)
-    })
+	// fmt.Printf("done processing request at %s\n", targetServer.Address())
+	targetServer.DecrementConnections()
 }
