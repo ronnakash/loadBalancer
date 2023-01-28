@@ -34,19 +34,7 @@ func ParseYaml() Config {
 
 
 func Parse() Config {
-	var config Config
-
-    // Read config.yaml file
-    yamlFile, err := ioutil.ReadFile("config.yaml")
-    if err != nil {
-        fmt.Println(err.Error())
-    }
-
-	// Parse yaml file into config struct
-	err = yaml.Unmarshal(yamlFile, &config)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
+	config := ParseYaml()
 
     //override config values with command-line args if they exist
     flag.StringVar(&config.Algorithm, "algorithm", config.Algorithm, "Algorithm name")
