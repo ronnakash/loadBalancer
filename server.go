@@ -9,10 +9,6 @@ import (
 	"sync"
 )
 
-// func main() {
-//     http.HandleFunc("/", HelloServer)
-//     http.ListenAndServe(":8080", nil)
-// }
 
 type Server interface {
 	// Address returns the address with which to access the server
@@ -32,11 +28,11 @@ type Server interface {
 
 	// Serve uses this server to process the request
 	Serve(rw http.ResponseWriter, req *http.Request)
+
+	// Equals(other Server) bool
 }
 
-// func HelloServer(w http.ResponseWriter, r *http.Request) {
-//     fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
-// }
+
 
 type SimpleServer struct {
 	addr 		string
@@ -76,22 +72,13 @@ func (s *SimpleServer) DecrementConnections() {
 	s.mutex.Unlock()
 }
 
-func NewSimpleServer(addr string, port string) *SimpleServer {
-	serverUrl, err := url.Parse("http://" + addr + ":" + port)
-	if(err != nil) {
-		fmt.Printf("error: %v\n", err)
-		os.Exit(1)
-	}
-	return &SimpleServer{
-		addr:  addr,
-		port: port,
-		proxy: httputil.NewSingleHostReverseProxy(serverUrl),
-	}
-}
+// func (s *SimpleServer) Equals(other Server) bool {
+// 	return s.Address()==other.Address()
+// }
 
-func newSimpleServer(params ServerParams) *SimpleServer {
+func NewSimpleServer(params ServerParams) *SimpleServer {
 	serverUrl, err := url.Parse("http://" + params.Address +":"+params.Port)
-	if(err != nil) {
+	if err != nil {
 		fmt.Printf("error: %v\n", err)
 		os.Exit(1)
 	}

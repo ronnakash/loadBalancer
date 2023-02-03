@@ -19,7 +19,7 @@ func NewLoadBalancer(config Config) *LoadBalancer {
 	// Initialize each server
     for i := range serverParams {
 		fmt.Printf("server %d: %s:%s\n", i, serverParams[i].Address, serverParams[i].Port )
-        servers = append(servers, newSimpleServer(serverParams[i]))
+        servers = append(servers, NewSimpleServer(serverParams[i]))
     }
 
 	return &LoadBalancer{
@@ -78,3 +78,32 @@ func (lb *LoadBalancer) serveProxy(rw http.ResponseWriter, req *http.Request) {
 	// fmt.Printf("done processing request at %s\n", targetServer.Address())
 	targetServer.DecrementConnections()
 }
+
+func (lb *LoadBalancer) ChangeAlgorithm(algo string) {
+	if algo == "round-robin" || algo == "least-connections" {
+		lb.algorithm = algo
+	} else {
+		fmt.Printf("No algorithm %s \n", algo)
+	}
+}
+
+
+func (lb *LoadBalancer) AddServer(params []string) {
+	//TODO: ensure params are of length 2, contain valid address and port
+	newServer := NewSimpleServer(ServerParams {Address : params[0], Port : params[1]})
+	lb.servers = append(lb.servers, newServer)
+}
+
+func (lb *LoadBalancer) RemoveServer(params []string) {
+	var removeIndex int
+	toRemove := NewSimpleServer(ServerParams {Address : params[0], Port : params[1]})
+	for i, server := range lb.servers {
+		if (server.Address() == toRemove.Address()){
+			removeIndex = i
+			break
+		}
+	}
+	lb.servers = append(lb.servers[:removeIndex], lb.servers[removeIndex+1:]...)
+
+}
+

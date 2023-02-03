@@ -48,24 +48,25 @@ func Parse() Config {
 	return config
 }
 
-func ReadInput() {
+func ReadInput(lb LoadBalancer) {
 	line := ReadInputLine()
+	//TODO: ensure not empty first
+
 	command := line[0]
 	switch command {
 		case "add-server":
-		
+			lb.AddServer(line[1:])
 		case "remove-server":
-
+			lb.RemoveServer(line[1:])
 		case "algo":
-
+			lb.ChangeAlgorithm(line[1])
 		default:
-		fmt.Printf("Command %s is invalid\n", command)
+			fmt.Printf("Command %s is invalid\n", command)
 	}
 }
 
 func ReadInputLine() []string{
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Enter a line of text: ")
 	text, _ := reader.ReadString('\n')
 
 	// Split the line into an array of words
