@@ -1,9 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"os"
+	"strings"
+
 	"gopkg.in/yaml.v3"
 )
 
@@ -42,4 +46,27 @@ func Parse() Config {
     flag.Parse()
 
 	return config
+}
+
+func ReadInput() {
+	command := ReadInputLine()
+	switch command[0] {
+		case "add-server":
+		
+		case "remove-server":
+
+		case "algo":
+
+		default:
+		
+	}
+}
+
+func ReadInputLine() []string{
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("Enter a line of text: ")
+	text, _ := reader.ReadString('\n')
+
+	// Split the line into an array of words
+	return strings.Fields(text)
 }
