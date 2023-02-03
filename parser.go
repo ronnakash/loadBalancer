@@ -49,8 +49,9 @@ func Parse() Config {
 }
 
 func ReadInput() {
-	command := ReadInputLine()
-	switch command[0] {
+	line := ReadInputLine()
+	command := line[0]
+	switch command {
 		case "add-server":
 		
 		case "remove-server":
@@ -58,7 +59,7 @@ func ReadInput() {
 		case "algo":
 
 		default:
-		
+		fmt.Printf("Command %s is invalid\n", command)
 	}
 }
 
