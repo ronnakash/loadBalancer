@@ -4,6 +4,8 @@ import (
 	// "fmt"
 	"net/http"
 	"net/http/httputil"
+	"strings"
+
 	// "net/url"
 	"sync"
 	// "strconv"
@@ -33,8 +35,6 @@ type Server interface {
 }
 
 
-
-
 type SimpleServer struct {
 	address 	ServerAddress
 	proxy 		*httputil.ReverseProxy
@@ -48,7 +48,13 @@ type ServerParams struct {
 	port string
 }
 
-
+func NewServerParams(address string) *ServerParams {
+	parts := strings.Split(address, ":")
+	return &ServerParams{
+		address: parts[0],
+		port: parts[1],
+	}
+}
 
 func (s *SimpleServer) Address() *ServerAddress { return &s.address }
 

@@ -89,17 +89,16 @@ func (lb *LoadBalancer) ChangeAlgorithm(algo string) bool{
 }
 
 
-func (lb *LoadBalancer) AddServer(params []string) bool{
-	//TODO: ensure params are of length 2, contain valid address and port
-	newServer := NewSimpleServer(&ServerParams {address : params[0], port : params[1]})
+func (lb *LoadBalancer) AddServer(addr string) bool{
+	newServer := NewSimpleServer(NewServerParams(addr))
 	if newServer != nil{
 		lb.servers = append(lb.servers, newServer)
 	}
 	return newServer != nil
 }
 
-func (lb *LoadBalancer) RemoveServer(params []string) bool{
-	toRemove := NewSimpleServer(&ServerParams {address : params[0], port : params[1]})
+func (lb *LoadBalancer) RemoveServer(addr string) bool{
+	toRemove := NewSimpleServer(NewServerParams(addr))
 	for i, server := range lb.servers {
 		if server.Address() == toRemove.Address(){
 			lb.servers = append(lb.servers[:i], lb.servers[i+1:]...)

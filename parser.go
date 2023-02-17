@@ -55,7 +55,8 @@ func Parse() Config {
 
 func ReadInput(lb LoadBalancer) {
 	line := ReadInputLine()
-	if len(line) == 0 {
+	if len(line) != 2 {
+		fmt.Printf("Argument number mismatch")
 		return
 	}
 	command := line[0]
@@ -63,23 +64,12 @@ func ReadInput(lb LoadBalancer) {
 	//TODO: add and remove should take one arg containing
 	//		address and port in format "addr:port"
 	case "add-server":
-		if len(line) != 3 {
-			fmt.Printf("Argument number mismatch")
-		} else {
-			lb.AddServer(line[1:])
-		}
+		lb.AddServer(line[1])
 	case "remove-server":
-		if len(line) != 3 {
-			fmt.Printf("Argument number mismatch")
-		} else {
-			lb.RemoveServer(line[1:])
-		}
+		lb.RemoveServer(line[1])
 	case "algo":
-		if len(line) != 2 {
-			fmt.Printf("Argument number mismatch")
-		} else {
-			lb.ChangeAlgorithm(line[1])
-		}
+		lb.ChangeAlgorithm(line[1])
+
 	default:
 		fmt.Printf("Command %s is invalid\n", command)
 	}
