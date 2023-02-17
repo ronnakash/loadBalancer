@@ -6,7 +6,7 @@ import (
 )
 
 type LoadBalancer struct {
-	port            string
+	port            int
 	roundRobinCount int
 	servers         []Server
 	algorithm		string
