@@ -2,7 +2,7 @@ package main
 
 import (
 	// "context"
-	// "flag"
+	"flag"
 	"fmt"
 	"time"
 
@@ -48,33 +48,35 @@ type Config struct {
 }
 
 
+func TestConfig() {
+    var cfg Config
+
+    flag.StringVar(&cfg.algorithm, "algorithm", "", "Algorithm name")
+    flag.StringVar(&cfg.serverAddr, "server", "", "Server address")
+    flag.IntVar(&cfg.serverPort, "port", 0, "Server port")
+    flag.Parse()
+
+    flag.Visit(func(f *flag.Flag) {
+        switch f.Name {
+        case "algorithm":
+            fmt.Print("Enter algorithm name: ")
+            fmt.Scan(&cfg.algorithm)
+        case "server":
+            fmt.Print("Enter server address: ")
+            fmt.Scan(&cfg.serverAddr)
+        case "port":
+            fmt.Print("Enter server port: ")
+            fmt.Scan(&cfg.serverPort)
+        }
+    })
+
+    fmt.Println("Using config:")
+    fmt.Println("Algorithm:", cfg.algorithm)
+    fmt.Println("Server:", cfg.serverAddr)
+    fmt.Println("Port:", cfg.serverPort)
+}
+
 func main() {
-    // var cfg Config
-
-    // flag.StringVar(&cfg.algorithm, "algorithm", "", "Algorithm name")
-    // flag.StringVar(&cfg.serverAddr, "server", "", "Server address")
-    // flag.IntVar(&cfg.serverPort, "port", 0, "Server port")
-    // flag.Parse()
-
-    // flag.Visit(func(f *flag.Flag) {
-    //     switch f.Name {
-    //     case "algorithm":
-    //         fmt.Print("Enter algorithm name: ")
-    //         fmt.Scan(&cfg.algorithm)
-    //     case "server":
-    //         fmt.Print("Enter server address: ")
-    //         fmt.Scan(&cfg.serverAddr)
-    //     case "port":
-    //         fmt.Print("Enter server port: ")
-    //         fmt.Scan(&cfg.serverPort)
-    //     }
-    // })
-
-    // fmt.Println("Using config:")
-    // fmt.Println("Algorithm:", cfg.algorithm)
-    // fmt.Println("Server:", cfg.serverAddr)
-    // fmt.Println("Port:", cfg.serverPort)
-
 
     go http.ListenAndServe(":8081", helloHandler("localhost:8081", 3))
     go http.ListenAndServe(":8082", helloHandler("localhost:8082", 2))
