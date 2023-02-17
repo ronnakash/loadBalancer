@@ -18,8 +18,7 @@ func NewLoadBalancer(config Config) *LoadBalancer {
 
 	// Initialize each server
     for i := range serverParams {
-		fmt.Printf("server %d: %s:%s\n", i, serverParams[i].Address, serverParams[i].Port )
-        servers = append(servers, NewSimpleServer(serverParams[i]))
+        servers = append(servers, NewSimpleServer(&serverParams[i]))
     }
 
 	return &LoadBalancer{
@@ -71,7 +70,7 @@ func (lb *LoadBalancer) serveProxy(rw http.ResponseWriter, req *http.Request) {
 	targetServer := lb.getNextAvailableServer()
 
 	// could optionally log stuff about the request here!
-	fmt.Printf("forwarding request to address %s\n", targetServer.Address())
+	fmt.Printf("forwarding request to address %s\n", (*targetServer.Address()).String())
 	targetServer.IncrementConnections()
 	// could delete pre-existing X-Forwarded-For header to prevent IP spoofing
 	targetServer.Serve(rw, req)
@@ -92,7 +91,7 @@ func (lb *LoadBalancer) ChangeAlgorithm(algo string) bool{
 
 func (lb *LoadBalancer) AddServer(params []string) bool{
 	//TODO: ensure params are of length 2, contain valid address and port
-	newServer := NewSimpleServer(ServerParams {Address : params[0], Port : params[1]})
+	newServer := NewSimpleServer(&ServerParams {address : params[0], port : params[1]})
 	if newServer != nil{
 		lb.servers = append(lb.servers, newServer)
 	}
@@ -100,7 +99,7 @@ func (lb *LoadBalancer) AddServer(params []string) bool{
 }
 
 func (lb *LoadBalancer) RemoveServer(params []string) bool{
-	toRemove := NewSimpleServer(ServerParams {Address : params[0], Port : params[1]})
+	toRemove := NewSimpleServer(&ServerParams {address : params[0], port : params[1]})
 	for i, server := range lb.servers {
 		if server.Address() == toRemove.Address(){
 			lb.servers = append(lb.servers[:i], lb.servers[i+1:]...)
