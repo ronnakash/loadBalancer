@@ -100,17 +100,12 @@ func (lb *LoadBalancer) AddServer(params []string) bool{
 }
 
 func (lb *LoadBalancer) RemoveServer(params []string) bool{
-	removeIndex:= -1
 	toRemove := NewSimpleServer(ServerParams {Address : params[0], Port : params[1]})
 	for i, server := range lb.servers {
 		if server.Address() == toRemove.Address(){
-			removeIndex = i
-			break
+			lb.servers = append(lb.servers[:i], lb.servers[i+1:]...)
+			return true
 		}
-	}
-	if removeIndex != -1{
-		lb.servers = append(lb.servers[:removeIndex], lb.servers[removeIndex+1:]...)
-		return true
 	}
 	return false
 }
