@@ -79,31 +79,39 @@ func (lb *LoadBalancer) serveProxy(rw http.ResponseWriter, req *http.Request) {
 	targetServer.DecrementConnections()
 }
 
-func (lb *LoadBalancer) ChangeAlgorithm(algo string) {
+func (lb *LoadBalancer) ChangeAlgorithm(algo string) bool{
 	if algo == "round-robin" || algo == "least-connections" {
 		lb.algorithm = algo
 	} else {
-		fmt.Printf("No algorithm %s \n", algo)
+		fmt.Printf("Algorithm %s is not supported\n", algo)
+		return false
 	}
+	return true
 }
 
 
-func (lb *LoadBalancer) AddServer(params []string) {
+func (lb *LoadBalancer) AddServer(params []string) bool{
 	//TODO: ensure params are of length 2, contain valid address and port
 	newServer := NewSimpleServer(ServerParams {Address : params[0], Port : params[1]})
-	lb.servers = append(lb.servers, newServer)
+	if newServer != nil{
+		lb.servers = append(lb.servers, newServer)
+	}
+	return newServer != nil
 }
 
-func (lb *LoadBalancer) RemoveServer(params []string) {
-	var removeIndex int
+func (lb *LoadBalancer) RemoveServer(params []string) bool{
+	removeIndex:= -1
 	toRemove := NewSimpleServer(ServerParams {Address : params[0], Port : params[1]})
 	for i, server := range lb.servers {
-		if (server.Address() == toRemove.Address()){
+		if server.Address() == toRemove.Address(){
 			removeIndex = i
 			break
 		}
 	}
-	lb.servers = append(lb.servers[:removeIndex], lb.servers[removeIndex+1:]...)
-
+	if removeIndex != -1{
+		lb.servers = append(lb.servers[:removeIndex], lb.servers[removeIndex+1:]...)
+		return true
+	}
+	return false
 }
 

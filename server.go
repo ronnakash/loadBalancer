@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"os"
 	"sync"
+	// "strconv"
+
 )
 
 
@@ -42,6 +43,7 @@ type SimpleServer struct {
 	connections	int
 }
 
+//TODO: make port be int maybe?
 type ServerParams struct {
 	Address string
 	Port string
@@ -80,7 +82,7 @@ func NewSimpleServer(params ServerParams) *SimpleServer {
 	serverUrl, err := url.Parse("http://" + params.Address +":"+params.Port)
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
-		os.Exit(1)
+		return nil
 	}
 	return &SimpleServer{
 		addr:  params.Address,
@@ -88,3 +90,17 @@ func NewSimpleServer(params ServerParams) *SimpleServer {
 		proxy: httputil.NewSingleHostReverseProxy(serverUrl),
 	}
 }
+
+// func NewSimpleServer(address string, port int) *SimpleServer {
+// 	portStr := strconv.Itoa(port)
+// 	serverUrl, err := url.Parse("http://" + address +":" + portStr)
+// 	if err != nil {
+// 		fmt.Printf("error: %v\n", err)
+// 		return nil
+// 	}
+// 	return &SimpleServer{
+// 		addr:  address,
+// 		port: portStr,
+// 		proxy: httputil.NewSingleHostReverseProxy(serverUrl),
+// 	}
+// }
