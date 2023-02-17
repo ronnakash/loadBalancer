@@ -14,6 +14,7 @@ import (
 type Server interface {
 	// Address returns the address with which to access the server
 	Address() string
+	// Address() ServerAddress
 
 	// IsAlive returns true if the server is alive and able to serve requests
 	IsAlive() bool
@@ -29,11 +30,17 @@ type Server interface {
 
 	// Serve uses this server to process the request
 	Serve(rw http.ResponseWriter, req *http.Request)
-
 	// Equals(other Server) bool
 }
 
 
+
+// type SimpleServer struct {
+// 	address 	ServerAddress
+// 	proxy 		*httputil.ReverseProxy
+// 	mutex 		sync.Mutex
+// 	connections	int
+// }
 
 type SimpleServer struct {
 	addr 		string
@@ -43,11 +50,12 @@ type SimpleServer struct {
 	connections	int
 }
 
-//TODO: make port be int maybe?
 type ServerParams struct {
 	Address string
 	Port string
 }
+
+// func (s *SimpleServer) Address() ServerAddress { return s.address }
 
 func (s *SimpleServer) Address() string { return s.addr + ":" + s.port }
 
