@@ -11,9 +11,9 @@ import (
 )
 
 type Config struct {
-	Algorithm string
-	Servers   []ServerParams
-	Port      int
+	algorithm string `yaml:"algorithm"`
+	servers   []ServerParams `yaml:"servers"`
+	port      int `yaml:"port"`
 }
 
 func ParseYaml() Config {
@@ -36,18 +36,18 @@ func ParseYaml() Config {
 func Parse() Config {
 	config := ParseYaml()
 	//override config values with command-line args if they exist
-	flag.StringVar(&config.Algorithm, "algorithm", config.Algorithm, "Algorithm name")
-	flag.IntVar(&config.Port, "port", config.Port, "Server port")
+	flag.StringVar(&config.algorithm, "algorithm", config.algorithm, "Algorithm name")
+	flag.IntVar(&config.port, "port", config.port, "Server port")
 	flag.Parse()
 	//check that algorithm and port are defined
 	//and if not, read them from user
-	if config.Algorithm == "" {
+	if config.algorithm == "" {
 		fmt.Print("Enter algorithm name: ")
-		fmt.Scan(&config.Algorithm)
+		fmt.Scan(&config.algorithm)
 	}
-	if config.Port == 0 {
+	if config.port == 0 {
 		fmt.Print("Enter server port: ")
-		fmt.Scan(&config.Port)
+		fmt.Scan(&config.port)
 	}
 
 	return config

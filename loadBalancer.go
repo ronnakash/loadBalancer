@@ -13,7 +13,7 @@ type LoadBalancer struct {
 }
 
 func NewLoadBalancer(config Config) *LoadBalancer {
-	var serverParams []ServerParams = config.Servers
+	var serverParams []ServerParams = config.servers
 	var servers []Server
 
 	// Initialize each server
@@ -22,10 +22,10 @@ func NewLoadBalancer(config Config) *LoadBalancer {
     }
 
 	return &LoadBalancer{
-		port:            	config.Port,
+		port:            	config.port,
 		roundRobinCount:	0,
 		servers:        	servers,
-		algorithm: 			config.Algorithm,
+		algorithm: 			config.algorithm,
 
 	}
 }
