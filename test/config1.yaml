@@ -1,0 +1,5 @@
+algorithm: round-robin
+port: 8080
+servers:
+    - address: localhost
+      port: "8081"
