@@ -11,9 +11,9 @@ import (
 )
 
 type Config struct {
-	algorithm string `yaml:"algorithm"`
-	servers   []ServerParams `yaml:"servers"`
-	port      int `yaml:"port"`
+	Algorithm string 
+	Servers   []ServerParams 
+	Port      int 
 }
 
 func ParseYaml() Config {
@@ -30,24 +30,25 @@ func ParseYaml() Config {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
+	fmt.Fprintf(os.Stdout, "%s %d\n", config.Algorithm, config.Port)
 	return config
 }
 
 func Parse() Config {
 	config := ParseYaml()
 	//override config values with command-line args if they exist
-	flag.StringVar(&config.algorithm, "algorithm", config.algorithm, "Algorithm name")
-	flag.IntVar(&config.port, "port", config.port, "Server port")
+	flag.StringVar(&config.Algorithm, "algorithm", config.Algorithm, "Algorithm name")
+	flag.IntVar(&config.Port, "port", config.Port, "Server Port")
 	flag.Parse()
-	//check that algorithm and port are defined
+	//check that algorithm and Port are defined
 	//and if not, read them from user
-	if config.algorithm == "" {
+	if config.Algorithm == "" {
 		fmt.Print("Enter algorithm name: ")
-		fmt.Scan(&config.algorithm)
+		fmt.Scan(&config.Algorithm)
 	}
-	if config.port == 0 {
-		fmt.Print("Enter server port: ")
-		fmt.Scan(&config.port)
+	if config.Port == 0 {
+		fmt.Print("Enter server Port: ")
+		fmt.Scan(&config.Port)
 	}
 
 	return config
@@ -62,7 +63,7 @@ func ReadInput(lb LoadBalancer) {
 	command := line[0]
 	switch command {
 	//TODO: add and remove should take one arg containing
-	//		address and port in format "addr:port"
+	//		address and Port in format "addr:Port"
 	case "add-server":
 		lb.AddServer(line[1])
 	case "remove-server":

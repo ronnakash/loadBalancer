@@ -53,12 +53,12 @@ func (s *ServerAddressImpl) PortString() string {
 }
 
 func NewServerAddress(sp *ServerParams) *ServerAddressImpl {
-	port, err := strconv.Atoi(sp.port)
+	port, err := strconv.Atoi(sp.Port)
 	if err != nil {
 		return nil
 	}
 	return &ServerAddressImpl{
-		address: sp.address,
+		address: sp.Address,
 		port:    port,
 	}
 }

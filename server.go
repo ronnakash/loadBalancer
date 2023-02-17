@@ -44,15 +44,15 @@ type SimpleServer struct {
 
 
 type ServerParams struct {
-	address string
-	port string
+	Address string
+	Port string
 }
 
 func NewServerParams(address string) *ServerParams {
 	parts := strings.Split(address, ":")
 	return &ServerParams{
-		address: parts[0],
-		port: parts[1],
+		Address: parts[0],
+		Port: parts[1],
 	}
 }
 

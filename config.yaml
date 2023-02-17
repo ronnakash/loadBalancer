@@ -1,4 +1,4 @@
-algorithm: not-round-robin
+algorithm: least-connections
 port: 8080
 servers:
 - address: localhost

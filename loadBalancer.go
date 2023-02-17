@@ -13,7 +13,7 @@ type LoadBalancer struct {
 }
 
 func NewLoadBalancer(config Config) *LoadBalancer {
-	var serverParams []ServerParams = config.servers
+	var serverParams []ServerParams = config.Servers
 	var servers []Server
 
 	// Initialize each server
@@ -22,10 +22,10 @@ func NewLoadBalancer(config Config) *LoadBalancer {
     }
 
 	return &LoadBalancer{
-		port:            	config.port,
+		port:            	config.Port,
 		roundRobinCount:	0,
 		servers:        	servers,
-		algorithm: 			config.algorithm,
+		algorithm: 			config.Algorithm,
 
 	}
 }
@@ -70,7 +70,7 @@ func (lb *LoadBalancer) serveProxy(rw http.ResponseWriter, req *http.Request) {
 	targetServer := lb.getNextAvailableServer()
 
 	// could optionally log stuff about the request here!
-	fmt.Printf("forwarding request to address %s\n", (*targetServer.Address()).String())
+	fmt.Printf("forwarding request to address %s with %d connection \n", (*targetServer.Address()).String(), targetServer.GetConnections())
 	targetServer.IncrementConnections()
 	// could delete pre-existing X-Forwarded-For header to prevent IP spoofing
 	targetServer.Serve(rw, req)
