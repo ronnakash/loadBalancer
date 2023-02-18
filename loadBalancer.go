@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 type LoadBalancer struct {
@@ -130,4 +131,20 @@ func (lb *LoadBalancer) ReadFromCLI() {
 	for true {
 		ReadInput(lb)
 	}
+}
+
+func (lb *LoadBalancer) ServeForever() {
+	portStr := strconv.Itoa(lb.port)
+	handleRedirect := func(rw http.ResponseWriter, req *http.Request) {
+		lb.serveProxy(rw, req)
+	}
+	lb.logger.Print(fmt.Sprintf("serving requests at localhost:%s\n", portStr))
+	go http.ListenAndServe(":"+portStr, http.HandlerFunc(handleRedirect))
+	lb.ReadFromCLI()
+}
+
+func InitializeLoadBalancer() *LoadBalancer {
+	config := Parse()
+	lb := NewLoadBalancer(config)
+	return lb
 }

@@ -56,9 +56,8 @@ func Parse() Config {
 
 func ReadInput(lb *LoadBalancer) {
 	line := ReadInputLine()
-	fmt.Printf("read input %s\n", line)
 	if len(line) > 2 {
-		fmt.Printf("Argument number mismatch\n")
+		lb.logger.PrintError(fmt.Sprintf("Argument number mismatch"))
 		return
 	}
 	command := line[0]
