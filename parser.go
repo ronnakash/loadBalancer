@@ -63,8 +63,6 @@ func ReadInput(lb *LoadBalancer) {
 	}
 	command := line[0]
 	switch command {
-	//TODO: add and remove should take one arg containing
-	//		address and Port in format "addr:Port"
 	case "add-server":
 		lb.AddServer(line[1])
 	case "remove-server":
@@ -76,6 +74,8 @@ func ReadInput(lb *LoadBalancer) {
 		fmt.Printf("Command %s is invalid\n", command)
 	}
 }
+
+
 
 func ReadInputLine() []string {
 	reader := bufio.NewReader(os.Stdin)

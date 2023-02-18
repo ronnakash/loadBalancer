@@ -18,4 +18,5 @@ func main() {
 	// http.HandleFunc("/", handleRedirect)
 	fmt.Printf("serving requests at localhost:%s\n", portStr)
 	go http.ListenAndServe(":"+portStr, http.HandlerFunc(handleRedirect))
+	lb.ReadFromCLI()
 }

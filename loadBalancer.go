@@ -94,9 +94,10 @@ func (lb *LoadBalancer) AddServer(addr string) bool{
 	newServer := NewSimpleServer(NewServerParams(addr))
 	if newServer != nil{
 		lb.servers = append(lb.servers, newServer)
-		fmt.Printf("new server %s added", addr)
+		fmt.Printf("new server %s added\n", addr)
+		return true
 	}
-	fmt.Printf("failed to add %s ", addr)
+	fmt.Printf("failed to add %s\n", addr)
 	return newServer != nil
 }
 
@@ -105,11 +106,16 @@ func (lb *LoadBalancer) RemoveServer(addr string) bool{
 	for i, server := range lb.servers {
 		if server.Address() == toRemove.Address(){
 			lb.servers = append(lb.servers[:i], lb.servers[i+1:]...)
-			fmt.Printf("server %s at %d removed", addr, i)
+			fmt.Printf("server %s at %d removed\n", addr, i)
 			return true
 		}
 	}
-	fmt.Printf("failed to remove %s ", addr)
+	fmt.Printf("failed to remove %s\n", addr)
 	return false
 }
 
+func (lb *LoadBalancer) ReadFromCLI() {
+	for true {
+		ReadInput(lb)
+	}
+}
