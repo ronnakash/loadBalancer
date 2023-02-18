@@ -57,21 +57,22 @@ func Parse() Config {
 func ReadInput(lb *LoadBalancer) {
 	line := ReadInputLine()
 	fmt.Printf("read input %s\n", line)
-	if len(line) != 2 {
+	if len(line) > 2 {
 		fmt.Printf("Argument number mismatch\n")
 		return
 	}
 	command := line[0]
 	switch command {
-	case "add-server":
-		lb.AddServer(line[1])
-	case "remove-server":
-		lb.RemoveServer(line[1])
-	case "algo":
-		lb.ChangeAlgorithm(line[1])
-
-	default:
-		fmt.Printf("Command %s is invalid\n", command)
+		case "add-server", "-as":
+			lb.AddServer(line[1])
+		case "remove-server", "-rs":
+			lb.RemoveServer(line[1])
+		case "algo", "-a":
+			lb.ChangeAlgorithm(line[1])
+		case "list", "-l":
+			lb.PrintServerList()
+		default:
+			fmt.Printf("Command %s is invalid\n", command)
 	}
 }
 

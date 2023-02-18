@@ -16,22 +16,31 @@ type LoadBalancer struct {
 func NewLoadBalancer(config Config) *LoadBalancer {
 	var serverParams []ServerParams = config.Servers
 	var servers []Server
+	logger := NewLogger(config.Logging)
 
 	// Initialize each server
     for i := range serverParams {
-        servers = append(servers, NewSimpleServer(&serverParams[i]))
+		server := NewSimpleServer(&serverParams[i])
+        servers = append(servers, server)
     }
-    logger := NewLogger(config.Logging)
 
-	return &LoadBalancer{
+	lb := &LoadBalancer{
 		port:            	config.Port,
 		roundRobinCount:	0,
 		servers:        	&servers,
 		algorithm: 			config.Algorithm,
 		logger: 			logger,
 	}
+	lb.PrintServerList()
+	return lb
 }
 
+func (lb *LoadBalancer) PrintServerList() {
+	for i, server := range *lb.servers {
+		serverAddr := *server.Address()
+		lb.logger.Print(fmt.Sprintf("Server %d at %s\n", i, serverAddr.String()))
+	}
+}
 
 func (lb *LoadBalancer) getNextAvailableServer() Server {
 	if (lb.algorithm == "round-robin"){
@@ -64,7 +73,6 @@ func (lb *LoadBalancer) getLeastConnectedServer() Server {
             minConns = conns
         }
     }
-
     return server
 }
 
@@ -73,7 +81,7 @@ func (lb *LoadBalancer) serveProxy(rw http.ResponseWriter, req *http.Request) {
 	targetServer := lb.getNextAvailableServer()
 
 	// could optionally log stuff about the request here!
-	fmt.Printf("forwarding request to address %s with %d connection \n", (*targetServer.Address()).String(), targetServer.GetConnections()+1)
+	lb.logger.Print(fmt.Sprintf("Forwarding request to address %s with %d connection \n", (*targetServer.Address()).String(), targetServer.GetConnections()+1))
 	targetServer.IncrementConnections()
 	// could delete pre-existing X-Forwarded-For header to prevent IP spoofing
 	targetServer.Serve(rw, req)
@@ -84,9 +92,9 @@ func (lb *LoadBalancer) serveProxy(rw http.ResponseWriter, req *http.Request) {
 func (lb *LoadBalancer) ChangeAlgorithm(algo string) bool{
 	if algo == "round-robin" || algo == "least-connections" {
 		lb.algorithm = algo
-		fmt.Printf("Algorithm %s \n", algo)
+		lb.logger.Print(fmt.Sprintf("Algorithm srt to %s \n", algo))
 	} else {
-		fmt.Printf("Algorithm %s is not supported\n", algo)
+		lb.logger.PrintError(fmt.Sprintf("Algorithm %s is not supported\n", algo))
 		return false
 	}
 	return true
@@ -97,10 +105,10 @@ func (lb *LoadBalancer) AddServer(addr string) bool{
 	newServer := NewSimpleServer(NewServerParams(addr))
 	if newServer != nil{
 		*lb.servers = append(*lb.servers, newServer)
-		fmt.Printf("new server %s added\n", addr)
+		lb.logger.Print(fmt.Sprintf("New server %s added\n", addr))
 		return true
 	}
-	fmt.Printf("failed to add %s\n", addr)
+	lb.logger.PrintError(fmt.Sprintf("Failed to add %s\n", addr))
 	return newServer != nil
 }
 
@@ -110,11 +118,11 @@ func (lb *LoadBalancer) RemoveServer(addr string) bool{
 	for i, server := range servers {
 		if server.Address() == toRemove.Address(){
 			*lb.servers = append(servers[:i], servers[i+1:]...)
-			fmt.Printf("server %s at %d removed\n", addr, i)
+			lb.logger.Print(fmt.Sprintf("Server %s at %d removed\n", addr, i))
 			return true
 		}
 	}
-	fmt.Printf("failed to remove %s\n", addr)
+	lb.logger.PrintError(fmt.Sprintf("Failed to remove %s\n", addr))
 	return false
 }
 
