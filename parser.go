@@ -68,8 +68,10 @@ func ReadInput(lb *LoadBalancer) {
 			lb.RemoveServer(line[1])
 		case "algo", "-a":
 			lb.ChangeAlgorithm(line[1])
-		case "list", "-l":
+		case "list", "-ll":
 			lb.PrintServerList()
+		case "log", "-l":
+			lb.SetLogging(line[1] == "true")
 		default:
 			fmt.Printf("Command %s is invalid\n", command)
 	}

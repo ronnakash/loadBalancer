@@ -23,13 +23,10 @@ func (l *Logger) PrintError(errMessage string) {
 	}
 }
 
-func (l *Logger) EnableLogging() {
-	l.log = true
+func (l *Logger) SetLogging(log bool) {
+	l.log = log
 }
 
-func (l *Logger) DisableLogging() {
-	l.log = false
-}
 
 func (l *Logger) CurrTimeString() string {
 	return time.Now().Format("2006-01-02 15:04:05")

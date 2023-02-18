@@ -143,6 +143,10 @@ func (lb *LoadBalancer) ServeForever() {
 	lb.ReadFromCLI()
 }
 
+func (lb *LoadBalancer) SetLogging(log bool) {
+	lb.logger.SetLogging(log)
+}
+
 func InitializeLoadBalancer() *LoadBalancer {
 	config := Parse()
 	lb := NewLoadBalancer(config)
