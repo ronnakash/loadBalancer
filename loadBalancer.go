@@ -56,7 +56,7 @@ func (lb *LoadBalancer) getLeastConnectedServer() (Server) {
     var minConns = -1
     for _, s := range lb.servers {
 		conns:= s.GetConnections()
-        if minConns == -1 || conns < minConns {
+        if conns < minConns {
             server = s
             minConns = conns
         }
