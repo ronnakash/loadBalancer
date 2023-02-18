@@ -54,10 +54,11 @@ func Parse() Config {
 	return config
 }
 
-func ReadInput(lb LoadBalancer) {
+func ReadInput(lb *LoadBalancer) {
 	line := ReadInputLine()
+	fmt.Printf("read input %s\n", line)
 	if len(line) != 2 {
-		fmt.Printf("Argument number mismatch")
+		fmt.Printf("Argument number mismatch\n")
 		return
 	}
 	command := line[0]

@@ -17,5 +17,5 @@ func main() {
 	portStr := strconv.Itoa(lb.port)
 	// http.HandleFunc("/", handleRedirect)
 	fmt.Printf("serving requests at localhost:%s\n", portStr)
-	http.ListenAndServe(":"+portStr, http.HandlerFunc(handleRedirect))
+	go http.ListenAndServe(":"+portStr, http.HandlerFunc(handleRedirect))
 }

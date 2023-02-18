@@ -12,14 +12,44 @@ import (
 	"sync"
 )
 
+type TestServer struct {
+    hostname            string
+    helloHandler        http.Handler
+    waitTime            time.Duration
+    connections         int
+    mutexCount 		    sync.Mutex
+    mutexProcess 		sync.Mutex
 
+}
 
-func helloHandler(hostname string, waitTime int) http.Handler {
+func NewTestServer(port int, waitTime int) *TestServer {
+    hostname := fmt.Sprintf("localhost:%d", port)
+    testServer := &TestServer{
+        hostname:       hostname,
+        waitTime:       time.Duration(waitTime)*time.Second,
+        connections:    0,
+    }
+    testServer.helloHandler = helloHandler(testServer)
+    return testServer
+}
+
+func helloHandler(testServer *TestServer) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        fmt.Printf("processing at %s\n", hostname)
-        time.Sleep(time.Duration(waitTime)*time.Second)
-        fmt.Fprintf(w, "hello from %s", hostname)
-        fmt.Printf("done at %s\n", hostname)
+        fmt.Printf("processing at %s\n", testServer.hostname)
+        testServer.mutexCount.Lock()
+        testServer.connections++
+        testServer.mutexCount.Unlock()
+        testServer.mutexProcess.Lock()
+        testServer.mutexCount.Lock()
+        fmt.Printf("requests at %s : %d\n", testServer.hostname, testServer.connections)
+        testServer.mutexCount.Unlock()
+        time.Sleep(testServer.waitTime)
+        fmt.Fprintf(w, "hello from %s", testServer.hostname)
+        testServer.mutexProcess.Unlock()
+        testServer.mutexCount.Lock()
+        testServer.connections--
+        testServer.mutexCount.Unlock()
+        fmt.Printf("done at %s\n", testServer.hostname)
     })
 }
 
@@ -77,10 +107,12 @@ func TestConfig() {
 }
 
 func main() {
-
-    go http.ListenAndServe(":8081", helloHandler("localhost:8081", 3))
-    go http.ListenAndServe(":8082", helloHandler("localhost:8082", 2))
-    go http.ListenAndServe(":8083", helloHandler("localhost:8083", 1))
+    server1 := NewTestServer(8081, 100)
+    server2 := NewTestServer(8082, 10)
+    server3 := NewTestServer(8083, 1)
+    go http.ListenAndServe(":8081", server1.helloHandler)
+    go http.ListenAndServe(":8082", server2.helloHandler)
+    go http.ListenAndServe(":8083", server3.helloHandler)
     makeRequests(100)
 }
 

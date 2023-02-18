@@ -70,7 +70,7 @@ func (lb *LoadBalancer) serveProxy(rw http.ResponseWriter, req *http.Request) {
 	targetServer := lb.getNextAvailableServer()
 
 	// could optionally log stuff about the request here!
-	fmt.Printf("forwarding request to address %s with %d connection \n", (*targetServer.Address()).String(), targetServer.GetConnections())
+	fmt.Printf("forwarding request to address %s with %d connection \n", (*targetServer.Address()).String(), targetServer.GetConnections()+1)
 	targetServer.IncrementConnections()
 	// could delete pre-existing X-Forwarded-For header to prevent IP spoofing
 	targetServer.Serve(rw, req)
@@ -81,6 +81,7 @@ func (lb *LoadBalancer) serveProxy(rw http.ResponseWriter, req *http.Request) {
 func (lb *LoadBalancer) ChangeAlgorithm(algo string) bool{
 	if algo == "round-robin" || algo == "least-connections" {
 		lb.algorithm = algo
+		fmt.Printf("Algorithm %s \n", algo)
 	} else {
 		fmt.Printf("Algorithm %s is not supported\n", algo)
 		return false
@@ -93,7 +94,9 @@ func (lb *LoadBalancer) AddServer(addr string) bool{
 	newServer := NewSimpleServer(NewServerParams(addr))
 	if newServer != nil{
 		lb.servers = append(lb.servers, newServer)
+		fmt.Printf("new server %s added", addr)
 	}
+	fmt.Printf("failed to add %s ", addr)
 	return newServer != nil
 }
 
@@ -102,9 +105,11 @@ func (lb *LoadBalancer) RemoveServer(addr string) bool{
 	for i, server := range lb.servers {
 		if server.Address() == toRemove.Address(){
 			lb.servers = append(lb.servers[:i], lb.servers[i+1:]...)
+			fmt.Printf("server %s at %d removed", addr, i)
 			return true
 		}
 	}
+	fmt.Printf("failed to remove %s ", addr)
 	return false
 }
 
