@@ -11,9 +11,10 @@ import (
 )
 
 type Config struct {
-	Algorithm string 
-	Servers   []ServerParams 
-	Port      int 
+	Algorithm 	string 
+	Servers   	[]ServerParams 
+	Port      	int 
+	Logging		bool
 }
 
 func ParseYaml() Config {
@@ -50,7 +51,6 @@ func Parse() Config {
 		fmt.Print("Enter server Port: ")
 		fmt.Scan(&config.Port)
 	}
-
 	return config
 }
 

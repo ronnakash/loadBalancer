@@ -1,5 +1,6 @@
 algorithm: round-robin
 port: 8080
+logging: true
 servers:
 - address: localhost
   port: 8081

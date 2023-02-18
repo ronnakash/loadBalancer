@@ -7,8 +7,9 @@ import (
 
 type LoadBalancer struct {
 	port            int
+	logger 			*Logger
 	roundRobinCount int
-	servers         []Server
+	servers         *[]Server
 	algorithm		string
 }
 
@@ -20,13 +21,14 @@ func NewLoadBalancer(config Config) *LoadBalancer {
     for i := range serverParams {
         servers = append(servers, NewSimpleServer(&serverParams[i]))
     }
+    logger := NewLogger(config.Logging)
 
 	return &LoadBalancer{
 		port:            	config.Port,
 		roundRobinCount:	0,
-		servers:        	servers,
+		servers:        	&servers,
 		algorithm: 			config.Algorithm,
-
+		logger: 			logger,
 	}
 }
 
@@ -42,19 +44,20 @@ func (lb *LoadBalancer) getNextAvailableServer() Server {
 // getNextServerAddr returns the address of the next available
 // server to send a request to, using round-robin algorithm
 func (lb *LoadBalancer) getNextAvailableServerRoundRobin() Server {
-	server := lb.servers[lb.roundRobinCount%len(lb.servers)]
+	servers := *lb.servers
+	server := servers[lb.roundRobinCount%len(servers)]
 	for !server.IsAlive() {
 		lb.roundRobinCount++
-		server = lb.servers[lb.roundRobinCount%len(lb.servers)]
+		server = servers[lb.roundRobinCount%len(servers)]
 	}
 	lb.roundRobinCount++
 	return server
 }
 
-func (lb *LoadBalancer) getLeastConnectedServer() (Server) {
+func (lb *LoadBalancer) getLeastConnectedServer() Server {
     var server Server
     var minConns = -1
-    for _, s := range lb.servers {
+    for _, s := range *lb.servers {
 		conns:= s.GetConnections()
         if conns < minConns {
             server = s
@@ -93,7 +96,7 @@ func (lb *LoadBalancer) ChangeAlgorithm(algo string) bool{
 func (lb *LoadBalancer) AddServer(addr string) bool{
 	newServer := NewSimpleServer(NewServerParams(addr))
 	if newServer != nil{
-		lb.servers = append(lb.servers, newServer)
+		*lb.servers = append(*lb.servers, newServer)
 		fmt.Printf("new server %s added\n", addr)
 		return true
 	}
@@ -103,9 +106,10 @@ func (lb *LoadBalancer) AddServer(addr string) bool{
 
 func (lb *LoadBalancer) RemoveServer(addr string) bool{
 	toRemove := NewSimpleServer(NewServerParams(addr))
-	for i, server := range lb.servers {
+	servers := *lb.servers
+	for i, server := range servers {
 		if server.Address() == toRemove.Address(){
-			lb.servers = append(lb.servers[:i], lb.servers[i+1:]...)
+			*lb.servers = append(servers[:i], servers[i+1:]...)
 			fmt.Printf("server %s at %d removed\n", addr, i)
 			return true
 		}
