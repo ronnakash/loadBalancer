@@ -12,7 +12,6 @@ The load balancer can be configured using a .yaml configuration file, or by pass
 The load balancer configuration is initialized using a config.yaml file in the following format:
 
     algorithm: (round-robin/least-connections)
-
     port: 8080
     logging: false
     servers:
@@ -28,13 +27,13 @@ If the algorithm or port are not specified, the load balancer will request the u
 The load balancer configuration can be changed while it is running using the cli and the following commands:
 
     configuration commands:
-        - as/add-server [addr:port]:
+        -as/add-server [addr:port]:
             adds a server to the cluster with the specified address and port
-        - rs/remove-server [addr:port]:
+        -rs/remove-server [addr:port]:
             removes a server from the cluster with the specified address and port if it exists, will print error otherwise
-        - a/algo [round-robin/least-connections]:
+        -a/algo [round-robin/least-connections]:
             sets the load balancer algorithm accordingly
-        - l/log [true/false]:
+        -l/log [true/false]:
             enable or disable logging
 
     additinal commands:
