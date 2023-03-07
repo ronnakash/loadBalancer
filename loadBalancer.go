@@ -145,6 +145,8 @@ func (lb *LoadBalancer) ServeForever() {
 
 func (lb *LoadBalancer) SetLogging(log bool) {
 	lb.logger.SetLogging(log)
+	logStr := strconv.FormatBool(log)
+	lb.logger.Print(fmt.Sprintf("Logging set to %s\n", logStr))
 }
 
 func InitializeLoadBalancer() *LoadBalancer {

@@ -31,7 +31,6 @@ func ParseYaml() Config {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	fmt.Fprintf(os.Stdout, "%s %d\n", config.Algorithm, config.Port)
 	return config
 }
 
@@ -60,6 +59,10 @@ func ReadInput(lb *LoadBalancer) {
 		lb.logger.PrintError(fmt.Sprintf("Argument number mismatch"))
 		return
 	}
+	if len(line) == 0 {
+		lb.logger.PrintError(fmt.Sprintf("Argument number mismatch"))
+		return
+	}
 	command := line[0]
 	switch command {
 		case "add-server", "-as":
@@ -71,7 +74,11 @@ func ReadInput(lb *LoadBalancer) {
 		case "list", "-ll":
 			lb.PrintServerList()
 		case "log", "-l":
-			lb.SetLogging(line[1] == "true")
+			if len(line) == 2 {
+				lb.SetLogging(line[1] == "true")
+			} else {
+				lb.logger.PrintError(fmt.Sprintf("Argument number mismatch"))
+			}
 		default:
 			fmt.Printf("Command %s is invalid\n", command)
 	}
