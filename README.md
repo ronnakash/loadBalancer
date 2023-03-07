@@ -11,25 +11,25 @@ The load balancer can be configured using a .yaml configuration file, or by pass
 
 The load balancer configuration is initialized using a config.yaml file in the following format:
 
-algorithm: (round-robin/least-connections)
+    algorithm: (round-robin/least-connections)
 
-port: 8080
+    port: 8080
 
-logging: false
+    logging: false
 
-servers:
+    servers:
 
-- address: localhost
+    - address: localhost
 
-  port: 8081
+    port: 8081
 
-- address: localhost
+    - address: localhost
 
-  port: 8082
+    port: 8082
 
-- address: localhost
+    - address: localhost
 
-  port: 8083
+    port: 8083
 
 If the algorithm or port are not specified, the load balancer will request the user to input them using the cli, with default values of port 8080 and round-robin algorithm.
 
